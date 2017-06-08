@@ -123,7 +123,7 @@ hypothesis = tf.sigmoid(tf.matmul(L4, W5) + b5)
 cost = -tf.reduce_mean(Y * tf.log(hypothesis) + (1 - Y) *
                        tf.log(1 - hypothesis))
 
-optimizer = tf.train.AdamOptimizer(learning_rate=0.001).minimize(cost)
+optimizer = tf.train.AdamOptimizer(learning_rate=0.0001).minimize(cost)
 
 # Accuracy computation
 # True if hypothesis>0.5 else False
