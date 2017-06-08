@@ -116,7 +116,7 @@ W5 = tf.get_variable("W5", shape=[312, 1],
 b5 = tf.Variable(tf.random_normal([1]))
 
 
-hypothesis = tf.sigmoid((tf.matmul(net, W5) + b5) + (tf.matmul(net_middle2, W4) + b4))
+hypothesis = tf.sigmoid((tf.matmul(net, W5) + b5))
 
 # cost/loss function
 cost = -tf.reduce_mean(Y * tf.log(hypothesis) + (1 - Y) *
