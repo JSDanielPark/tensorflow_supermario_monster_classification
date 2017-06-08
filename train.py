@@ -73,13 +73,13 @@ net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
 net = tf.nn.dropout(net, keep_prob=keep_prob)
 
 print net
-net = tf.reshape(net, [-1, 30*30*64])
+net2 = tf.reshape(net, [-1, 30*30*64])
 
 # L4 FC 4x4x128 inputs -> 625 outputs
 W6 = tf.get_variable("W6", shape=[30*30*64, 625],
                      initializer=tf.contrib.layers.xavier_initializer())
 b6 = tf.Variable(tf.random_normal([625]))
-middle_output = tf.matmul(net, W6) + b6
+middle_output = tf.matmul(net2, W6) + b6
 
 
 # L3 ImgIn shape=(?, 7, 7, 64)
