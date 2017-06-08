@@ -72,6 +72,12 @@ net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
                     strides=[1, 2, 2, 1], padding='SAME')
 net = tf.nn.dropout(net, keep_prob=keep_prob)
 
+net_middle = tf.reshape(net, [-1, 30*30*64])
+W7 = tf.get_variable("W7", shape=[30*30*64, 312],
+                     initializer=tf.contrib.layers.xavier_initializer())
+b7 = tf.Variable(tf.random_normal([312]))
+net_middle_output = tf.matmul(net_middle, W7) + b7
+
 
 # L3 ImgIn shape=(?, 7, 7, 64)
 W3 = tf.Variable(tf.random_normal([3, 3, 64, 128], stddev=0.01))
@@ -93,16 +99,24 @@ net = tf.reshape(net, [-1, weight_shape])
 W4 = tf.get_variable("W4", shape=[weight_shape, 625],
                      initializer=tf.contrib.layers.xavier_initializer())
 b4 = tf.Variable(tf.random_normal([625]))
+net_middle2 = net
 net = tf.nn.relu(tf.matmul(net, W4) + b4)
 net = tf.nn.dropout(net, keep_prob=keep_prob)
 
 
-W5 = tf.get_variable("W5", shape=[625, 1],
+W6 = tf.get_variable("W6", shape=[625, 312],
+                     initializer=tf.contrib.layers.xavier_initializer())
+b6 = tf.Variable(tf.random_normal([312]))
+net = tf.nn.relu((tf.matmul(net, W6) + b6) + net_middle_output)
+net = tf.nn.dropout(net, keep_prob=keep_prob)
+
+
+W5 = tf.get_variable("W5", shape=[312, 1],
                      initializer=tf.contrib.layers.xavier_initializer())
 b5 = tf.Variable(tf.random_normal([1]))
 
 
-hypothesis = tf.sigmoid(tf.matmul(net, W5) + b5)
+hypothesis = tf.sigmoid((tf.matmul(net, W5) + b5) + (tf.matmul(net_middle2, W4) + b4))
 
 # cost/loss function
 cost = -tf.reduce_mean(Y * tf.log(hypothesis) + (1 - Y) *
