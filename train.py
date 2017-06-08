@@ -85,16 +85,6 @@ L3 = tf.nn.max_pool(L3, ksize=[1, 2, 2, 1], strides=[
 L3 = tf.nn.dropout(L3, keep_prob=keep_prob)
 
 
-W3 = tf.Variable(tf.random_normal([3, 3, 128, 256], stddev=0.01))
-#    Conv      ->(?, 7, 7, 128)
-#    Pool      ->(?, 4, 4, 128)
-#    Reshape   ->(?, 4 * 4 * 128) # Flatten them for FC
-L3 = tf.nn.conv2d(L3, W3, strides=[1, 1, 1, 1], padding='SAME')
-L3 = tf.nn.relu(L3)
-L3 = tf.nn.max_pool(L3, ksize=[1, 2, 2, 1], strides=[
-                    1, 2, 2, 1], padding='SAME')
-L3 = tf.nn.dropout(L3, keep_prob=keep_prob)
-
 
 weight_shape = 128 * 15 * 15
 L3 = tf.reshape(L3, [-1, weight_shape])
