@@ -40,7 +40,7 @@ for file in li:
 
 
 # hyper parameters
-learning_rate = 0.00001
+learning_rate = 0.00003
 training_epochs = 15
 batch_size = 100
 
