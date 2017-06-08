@@ -71,18 +71,17 @@ L3 = tf.nn.max_pool(L3, ksize=[1, 2, 2, 1], strides=[
                     1, 2, 2, 1], padding='SAME')
 L3 = tf.nn.dropout(L3, keep_prob=keep_prob)
 
-W3 = tf.Variable(tf.random_normal([3, 3, 128, 256], stddev=0.01))
-L3 = tf.nn.conv2d(L3, W3, strides=[1, 1, 1, 1], padding='SAME')
+W3 = tf.Variable(tf.random_normal([2, 2, 128, 256], stddev=0.01))
+L3 = tf.nn.conv2d(L3, W3, strides=[1, 2, 2, 1], padding='SAME')
 L3 = tf.nn.relu(L3)
-L3 = tf.nn.max_pool(L3, ksize=[1, 2, 2, 1], strides=[
-                    1, 2, 2, 1], padding='SAME')
 L3 = tf.nn.dropout(L3, keep_prob=keep_prob)
 print L3
 
-L3 = tf.reshape(L3, [-1, 256 * 8 * 8])
+weight_shape = 256 * 8 * 8
+L3 = tf.reshape(L3, [-1, weight_shape])
 
 
-W4 = tf.get_variable("W4", shape=[256 * 8 * 8, 625],
+W4 = tf.get_variable("W4", shape=[weight_shape, 625],
                      initializer=tf.contrib.layers.xavier_initializer())
 b4 = tf.Variable(tf.random_normal([625]))
 L4 = tf.nn.relu(tf.matmul(L3, W4) + b4)
