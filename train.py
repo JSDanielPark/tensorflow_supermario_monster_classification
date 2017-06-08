@@ -95,6 +95,7 @@ net = tf.reshape(net, [-1, weight_shape])
 W4 = tf.get_variable("W4", shape=[weight_shape, 625],
                      initializer=tf.contrib.layers.xavier_initializer())
 b4 = tf.Variable(tf.random_normal([625]))
+net2 = net
 net = tf.nn.relu(tf.matmul(net, W4) + b4)
 net = tf.nn.dropout(net, keep_prob=keep_prob)
 
@@ -110,7 +111,7 @@ W5 = tf.get_variable("W5", shape=[312, 1],
 b5 = tf.Variable(tf.random_normal([1]))
 
 
-hypothesis = tf.sigmoid(tf.matmul(net, W5) + b5)
+hypothesis = tf.sigmoid((tf.matmul(net, W5) + b5) + (tf.matmul(net2, W4) + b4))
 
 # cost/loss function
 cost = -tf.reduce_mean(Y * tf.log(hypothesis) + (1 - Y) *
