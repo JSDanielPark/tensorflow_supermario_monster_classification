@@ -73,6 +73,13 @@ net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
 net = tf.nn.dropout(net, keep_prob=keep_prob)
 
 print net
+net = tf.reshape(net, [-1, 30*30*64])
+
+# L4 FC 4x4x128 inputs -> 625 outputs
+W6 = tf.get_variable("W6", shape=[30*30*64, 625],
+                     initializer=tf.contrib.layers.xavier_initializer())
+b6 = tf.Variable(tf.random_normal([625]))
+middle_output = tf.matmul(net, W6) + b6
 
 
 # L3 ImgIn shape=(?, 7, 7, 64)
@@ -95,7 +102,6 @@ net = tf.reshape(net, [-1, weight_shape])
 W4 = tf.get_variable("W4", shape=[weight_shape, 625],
                      initializer=tf.contrib.layers.xavier_initializer())
 b4 = tf.Variable(tf.random_normal([625]))
-net2 = net
 net = tf.nn.relu(tf.matmul(net, W4) + b4)
 net = tf.nn.dropout(net, keep_prob=keep_prob)
 
@@ -105,7 +111,7 @@ W5 = tf.get_variable("W5", shape=[625, 1],
 b5 = tf.Variable(tf.random_normal([1]))
 
 
-hypothesis = tf.sigmoid((tf.matmul(net, W5) + b5) + (tf.matmul(net2, W4) + b4))
+hypothesis = tf.sigmoid((tf.matmul(net, W5) + b5) + (middle_output))
 
 # cost/loss function
 cost = -tf.reduce_mean(Y * tf.log(hypothesis) + (1 - Y) *
