@@ -101,7 +101,7 @@ net = tf.nn.dropout(net, keep_prob=keep_prob)
 W6 = tf.get_variable("W6", shape=[625, 312],
                      initializer=tf.contrib.layers.xavier_initializer())
 b6 = tf.Variable(tf.random_normal([312]))
-net = tf.nn.relu(tf.matmul(net, W6) + b4)
+net = tf.nn.relu(tf.matmul(net, W6) + b6)
 net = tf.nn.dropout(net, keep_prob=keep_prob)
 
 
