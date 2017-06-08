@@ -72,6 +72,8 @@ net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
                     strides=[1, 2, 2, 1], padding='SAME')
 net = tf.nn.dropout(net, keep_prob=keep_prob)
 
+print net
+
 
 # L3 ImgIn shape=(?, 7, 7, 64)
 W3 = tf.Variable(tf.random_normal([3, 3, 64, 128], stddev=0.01))
