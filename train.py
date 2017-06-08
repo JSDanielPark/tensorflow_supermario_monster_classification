@@ -98,12 +98,12 @@ for idx in range(2):
     L4 = tf.nn.dropout(L4, keep_prob=keep_prob)
     nets.append(L4)
 
-net_mul = 1
+net_mul = 0
 b6 = tf.Variable(tf.random_normal([300]))
 W6 = tf.get_variable("W6", shape=[625, 300],
                          initializer=tf.contrib.layers.xavier_initializer())
 for net in nets:
-    net_mul *= tf.matmul(net, W6) + b6
+    net_mul += tf.matmul(net, W6) + b6
 
 L4 = tf.nn.relu(net_mul)
 L4 = tf.nn.dropout(L4, keep_prob=keep_prob)
