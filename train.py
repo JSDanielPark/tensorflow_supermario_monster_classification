@@ -13,10 +13,10 @@ from scipy import misc
 tf.set_random_seed(777)  # reproducibility
 
 
-train_0_path = './class/train/0/'
-train_1_path = './class/train/1/'
-test_0_path = './class/test/0/'
-test_1_path = './class/test/1/'
+train_0_path = './dataset/train/0/'
+train_1_path = './dataset/train/1/'
+test_0_path = './dataset/test/0/'
+test_1_path = './dataset/test/1/'
 
 input_size = 120*120
 output_size = 1
