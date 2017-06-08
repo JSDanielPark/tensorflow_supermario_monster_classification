@@ -99,14 +99,8 @@ net2 = net
 net = tf.nn.relu(tf.matmul(net, W4) + b4)
 net = tf.nn.dropout(net, keep_prob=keep_prob)
 
-W6 = tf.get_variable("W6", shape=[625, 312],
-                     initializer=tf.contrib.layers.xavier_initializer())
-b6 = tf.Variable(tf.random_normal([312]))
-net = tf.nn.relu(tf.matmul(net, W6) + b6)
-net = tf.nn.dropout(net, keep_prob=keep_prob)
 
-
-W5 = tf.get_variable("W5", shape=[312, 1],
+W5 = tf.get_variable("W5", shape=[625, 1],
                      initializer=tf.contrib.layers.xavier_initializer())
 b5 = tf.Variable(tf.random_normal([1]))
 
