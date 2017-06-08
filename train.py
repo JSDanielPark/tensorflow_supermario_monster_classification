@@ -40,9 +40,9 @@ for file in li:
 
 
 # hyper parameters
-learning_rate = 0.001
+learning_rate = 0.0003
 training_epochs = 15
-batch_size = 50
+batch_size = 100
 
 keep_prob = tf.placeholder(tf.float32)
 
@@ -51,74 +51,58 @@ X = tf.placeholder(tf.float32, [None, input_size])
 X_img = tf.reshape(X, [-1, 120, 120, 1])
 Y = tf.placeholder(tf.float32, [None, output_size])
 
-nets = []
-for idx in range(2):
-    W1 = tf.Variable(tf.random_normal([3, 3, 1, 32], stddev=0.01))
-    net = tf.nn.conv2d(X_img, W1, strides=[1, 1, 1, 1], padding='SAME')
-    net = tf.nn.relu(net)
-    net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
-                        strides=[1, 2, 2, 1], padding='SAME')
-    net = tf.nn.dropout(net, keep_prob=keep_prob)
+# L1 ImgIn shape=(?, 28, 28, 1)
+W1 = tf.Variable(tf.random_normal([3, 3, 1, 32], stddev=0.01))
+#    Conv     -> (?, 28, 28, 32)
+#    Pool     -> (?, 14, 14, 32)
+net = tf.nn.conv2d(X_img, W1, strides=[1, 1, 1, 1], padding='SAME')
+net = tf.nn.relu(net)
+net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
+                    strides=[1, 2, 2, 1], padding='SAME')
+net = tf.nn.dropout(net, keep_prob=keep_prob)
 
 
-    # L2 ImgIn shape=(?, 14, 14, 32)
-    W2 = tf.Variable(tf.random_normal([3, 3, 32, 64], stddev=0.01))
-    #    Conv      ->(?, 14, 14, 64)
-    #    Pool      ->(?, 7, 7, 64)
-    net = tf.nn.conv2d(net, W2, strides=[1, 1, 1, 1], padding='SAME')
-    net = tf.nn.relu(net)
-    net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
-                        strides=[1, 2, 2, 1], padding='SAME')
-    net = tf.nn.dropout(net, keep_prob=keep_prob)
+# L2 ImgIn shape=(?, 14, 14, 32)
+W2 = tf.Variable(tf.random_normal([3, 3, 32, 64], stddev=0.01))
+#    Conv      ->(?, 14, 14, 64)
+#    Pool      ->(?, 7, 7, 64)
+net = tf.nn.conv2d(net, W2, strides=[1, 1, 1, 1], padding='SAME')
+net = tf.nn.relu(net)
+net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1],
+                    strides=[1, 2, 2, 1], padding='SAME')
+net = tf.nn.dropout(net, keep_prob=keep_prob)
 
 
-    # L3 ImgIn shape=(?, 7, 7, 64)
-    W3 = tf.Variable(tf.random_normal([3, 3, 64, 128], stddev=0.01))
-    #    Conv      ->(?, 7, 7, 128)
-    #    Pool      ->(?, 4, 4, 128)
-    #    Reshape   ->(?, 4 * 4 * 128) # Flatten them for FC
-    net = tf.nn.conv2d(net, W3, strides=[1, 1, 1, 1], padding='SAME')
-    net = tf.nn.relu(net)
-    net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1], strides=[
-                        1, 2, 2, 1], padding='SAME')
-    net = tf.nn.dropout(net, keep_prob=keep_prob)
-
-    #net = tf.reshape(net, [-1, 128 * 15 * 15])
+# L3 ImgIn shape=(?, 7, 7, 64)
+W3 = tf.Variable(tf.random_normal([3, 3, 64, 128], stddev=0.01))
+#    Conv      ->(?, 7, 7, 128)
+#    Pool      ->(?, 4, 4, 128)
+#    Reshape   ->(?, 4 * 4 * 128) # Flatten them for FC
+net = tf.nn.conv2d(net, W3, strides=[1, 1, 1, 1], padding='SAME')
+net = tf.nn.relu(net)
+net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1], strides=[
+                    1, 2, 2, 1], padding='SAME')
+net = tf.nn.dropout(net, keep_prob=keep_prob)
 
 
 
-    weight_shape = 128 * 15 * 15
-    L3 = tf.reshape(net, [-1, weight_shape])
+weight_shape = 128 * 15 * 15
+net = tf.reshape(net, [-1, weight_shape])
 
-    # L4 FC 4x4x128 inputs -> 625 outputs
-    W4 = tf.get_variable("W"+str(idx+7), shape=[weight_shape, 625],
-                         initializer=tf.contrib.layers.xavier_initializer())
-    b4 = tf.Variable(tf.random_normal([625]))
-    L4 = tf.nn.relu(tf.matmul(L3, W4) + b4)
-    L4 = tf.nn.dropout(L4, keep_prob=keep_prob)
-    nets.append(L4)
+# L4 FC 4x4x128 inputs -> 625 outputs
+W4 = tf.get_variable("W4", shape=[weight_shape, 625],
+                     initializer=tf.contrib.layers.xavier_initializer())
+b4 = tf.Variable(tf.random_normal([625]))
+net = tf.nn.relu(tf.matmul(net, W4) + b4)
+net = tf.nn.dropout(net, keep_prob=keep_prob)
 
-net_mul = 0
-b6 = tf.Variable(tf.random_normal([300]))
-W6 = tf.get_variable("W6", shape=[625, 300],
-                         initializer=tf.contrib.layers.xavier_initializer())
-for net in nets:
-    net_mul += tf.matmul(net, W6) + b6
 
-L4 = tf.nn.relu(net_mul)
-L4 = tf.nn.dropout(L4, keep_prob=keep_prob)
-
-# L5 Final FC 625 inputs -> 10 outputs
-W5 = tf.get_variable("W5", shape=[300, 1],
+W5 = tf.get_variable("W5", shape=[625, 1],
                      initializer=tf.contrib.layers.xavier_initializer())
 b5 = tf.Variable(tf.random_normal([1]))
 
-#hypothesis = tf.matmul(L4, W5) + b5
 
-# cost/loss function
-#cost = tf.reduce_mean(tf.square(Y - hypothesis))
-
-hypothesis = tf.sigmoid(tf.matmul(L4, W5) + b5)
+hypothesis = tf.sigmoid(tf.matmul(net, W5) + b5)
 
 # cost/loss function
 cost = -tf.reduce_mean(Y * tf.log(hypothesis) + (1 - Y) *
