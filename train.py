@@ -91,7 +91,7 @@ for idx in range(5):
     L3 = tf.reshape(net, [-1, weight_shape])
 
     # L4 FC 4x4x128 inputs -> 625 outputs
-    W4 = tf.get_variable("W4", shape=[weight_shape, 625],
+    W4 = tf.get_variable("W"+str(idx+7), shape=[weight_shape, 625],
                          initializer=tf.contrib.layers.xavier_initializer())
     b4 = tf.Variable(tf.random_normal([625]))
     L4 = tf.nn.relu(tf.matmul(L3, W4) + b4)
