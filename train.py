@@ -81,14 +81,32 @@ net = tf.nn.max_pool(net, ksize=[1, 2, 2, 1], strides=[
                     1, 2, 2, 1], padding='SAME')
 net = tf.nn.dropout(net, keep_prob=keep_prob)
 
-net = tf.reshape(net, [-1, 128 * 15 * 15])
-
-net = tf.layers.dense(net, 625)
-net = tf.nn.dropout(net, keep_prob=keep_prob)
-net = tf.layers.dense(net, 1, activation=tf.sigmoid)
+#net = tf.reshape(net, [-1, 128 * 15 * 15])
 
 
-hypothesis = net#tf.sigmoid(tf.matmul(L4, W5) + b5)
+
+weight_shape = 128 * 15 * 15
+L3 = tf.reshape(net, [-1, weight_shape])
+
+# L4 FC 4x4x128 inputs -> 625 outputs
+W4 = tf.get_variable("W4", shape=[weight_shape, 625],
+                     initializer=tf.contrib.layers.xavier_initializer())
+b4 = tf.Variable(tf.random_normal([625]))
+L4 = tf.nn.relu(tf.matmul(L3, W4) + b4)
+L4 = tf.nn.dropout(L4, keep_prob=keep_prob)
+
+
+# L5 Final FC 625 inputs -> 10 outputs
+W5 = tf.get_variable("W5", shape=[625, 1],
+                     initializer=tf.contrib.layers.xavier_initializer())
+b5 = tf.Variable(tf.random_normal([1]))
+
+#hypothesis = tf.matmul(L4, W5) + b5
+
+# cost/loss function
+#cost = tf.reduce_mean(tf.square(Y - hypothesis))
+
+hypothesis = tf.sigmoid(tf.matmul(L4, W5) + b5)
 
 # cost/loss function
 cost = -tf.reduce_mean(Y * tf.log(hypothesis) + (1 - Y) *
