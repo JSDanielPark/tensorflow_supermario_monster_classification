@@ -42,7 +42,7 @@ for file in li:
 # hyper parameters
 learning_rate = 0.0003
 training_epochs = 15
-batch_size = 100
+batch_size = 50
 
 keep_prob = tf.placeholder(tf.float32)
 
@@ -52,7 +52,7 @@ X_img = tf.reshape(X, [-1, 120, 120, 1])
 Y = tf.placeholder(tf.float32, [None, output_size])
 
 nets = []
-for idx in range(5):
+for idx in range(2):
     W1 = tf.Variable(tf.random_normal([3, 3, 1, 32], stddev=0.01))
     net = tf.nn.conv2d(X_img, W1, strides=[1, 1, 1, 1], padding='SAME')
     net = tf.nn.relu(net)
