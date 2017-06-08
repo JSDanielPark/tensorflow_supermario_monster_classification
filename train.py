@@ -52,10 +52,10 @@ X_img = tf.reshape(X, [-1, 120, 120, 1])
 Y = tf.placeholder(tf.float32, [None, output_size])
 
 # L1 ImgIn shape=(?, 28, 28, 1)
-W1 = tf.Variable(tf.random_normal([8, 8, 1, 32], stddev=0.01))
+W1 = tf.Variable(tf.random_normal([3, 3, 1, 32], stddev=0.01))
 #    Conv     -> (?, 28, 28, 32)
 #    Pool     -> (?, 14, 14, 32)
-L1 = tf.nn.conv2d(X_img, W1, strides=[1, 2, 2, 1], padding='SAME')
+L1 = tf.nn.conv2d(X_img, W1, strides=[1, 1, 1, 1], padding='SAME')
 L1 = tf.nn.relu(L1)
 L1 = tf.nn.max_pool(L1, ksize=[1, 2, 2, 1],
                     strides=[1, 2, 2, 1], padding='SAME')
@@ -63,10 +63,10 @@ L1 = tf.nn.dropout(L1, keep_prob=keep_prob)
 
 
 # L2 ImgIn shape=(?, 14, 14, 32)
-W2 = tf.Variable(tf.random_normal([5, 5, 32, 64], stddev=0.01))
+W2 = tf.Variable(tf.random_normal([3, 3, 32, 64], stddev=0.01))
 #    Conv      ->(?, 14, 14, 64)
 #    Pool      ->(?, 7, 7, 64)
-L2 = tf.nn.conv2d(L1, W2, strides=[1, 2, 2, 1], padding='SAME')
+L2 = tf.nn.conv2d(L1, W2, strides=[1, 1, 1, 1], padding='SAME')
 L2 = tf.nn.relu(L2)
 L2 = tf.nn.max_pool(L2, ksize=[1, 2, 2, 1],
                     strides=[1, 2, 2, 1], padding='SAME')
@@ -94,9 +94,9 @@ L3 = tf.nn.relu(L3)
 L3 = tf.nn.max_pool(L3, ksize=[1, 2, 2, 1], strides=[
                     1, 2, 2, 1], padding='SAME')
 L3 = tf.nn.dropout(L3, keep_prob=keep_prob)
-print L3
 
-weight_shape = 256 * 2 * 2
+
+weight_shape = 128 * 15 * 15
 L3 = tf.reshape(L3, [-1, weight_shape])
 
 # L4 FC 4x4x128 inputs -> 625 outputs
